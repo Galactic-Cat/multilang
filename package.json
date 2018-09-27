@@ -1,0 +1,24 @@
+{
+  "name": "catworks-multilang",
+  "version": "0.0.1",
+  "description": "A quick XMLHTTP solution for multiple languages on one page.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Galactic-Cat/multilang.git"
+  },
+  "keywords": [
+    "xmlhttp",
+    "multiple",
+    "languages"
+  ],
+  "author": "Galactic-Cat",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Galactic-Cat/multilang/issues"
+  },
+  "homepage": "https://github.com/Galactic-Cat/multilang#readme"
+}
