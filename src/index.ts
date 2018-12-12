@@ -37,7 +37,7 @@ export default class MultiLang {
      * @param file Path to the langauge file, which internally should be formatted as JSON
      * @returns string target name for langauge
      */
-    public AddLanguage(file) : string {
+    public addLanguage(file) : string {
         let filename = file.substring(file.lastIndexOf('/') + 1, file.lastIndexOf('.'))
         this.languages[filename] = file
         return filename
