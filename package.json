@@ -1,6 +1,6 @@
 {
   "name": "catworks-multilang",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A quick XMLHTTP solution for multiple languages on one page.",
   "main": "index.js",
   "scripts": {
