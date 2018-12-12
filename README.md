@@ -29,4 +29,26 @@ You can change the language later using:
 multilang.swap(/* language */)
 ```
 
+You can also nest your language files:
+```json
+{
+    "toolbar": {
+        "title": "A MultiLang Page",
+        "login": {
+            "login": "Log In",
+            "register": "Register"
+        }
+    }
+}
+```
+Then you can load them like this:
+```html
+<div>
+    <h1 multilang="toolbar.title"></h1>
+    <button multilang="toolbar.login.login"></button>
+    <button multilang="toolbar.login.register"></button>
+</div>
+```
+Easy peasy.
+
 ### That's all for now folks.
