@@ -28,6 +28,9 @@ export default class MultiLang {
                 this.main = name
         })
 
+        // Find the initial MultiLang targets
+        this.retarget()
+
         // Load the main language if provided
         if (this.main !== null)
             this.swap(this.main)
@@ -41,12 +44,12 @@ export default class MultiLang {
     public addLanguage(file) : string {
         let filename = file.substring(file.lastIndexOf('/') + 1, file.lastIndexOf('.'))
 
-        if (Object.keys(this.languages).indexOf(filename) !== -1) {
+        if (Object.keys(this.files).indexOf(filename) !== -1) {
             console.warn(`[MultiLang] Can't add language with already added existing name '${filename}'.`)
             return null
         }
 
-        this.languages[filename] = file
+        this.files[filename] = file
         return filename
     }
 
