@@ -27,6 +27,8 @@ var MultiLang = /** @class */ (function () {
             if (name !== null && _this.main === null && (files.length === 1 || i === files.length - 1 || name === 'en' || name === 'eng' || name === 'english'))
                 _this.main = name;
         });
+        // Find the initial MultiLang targets
+        this.retarget();
         // Load the main language if provided
         if (this.main !== null)
             this.swap(this.main);
@@ -38,11 +40,11 @@ var MultiLang = /** @class */ (function () {
      */
     MultiLang.prototype.addLanguage = function (file) {
         var filename = file.substring(file.lastIndexOf('/') + 1, file.lastIndexOf('.'));
-        if (Object.keys(this.languages).indexOf(filename) !== -1) {
+        if (Object.keys(this.files).indexOf(filename) !== -1) {
             console.warn("[MultiLang] Can't add language with already added existing name '" + filename + "'.");
             return null;
         }
-        this.languages[filename] = file;
+        this.files[filename] = file;
         return filename;
     };
     /**
