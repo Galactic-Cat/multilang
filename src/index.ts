@@ -22,8 +22,9 @@ export default class MultiLang {
 
         // Find the file name
         files.forEach((file, i) => {
-            let name = file.substring(file.lastIndexOf('/') + 1, file.lastIndexOf('.'))
-            if (this.main === null && (files.length === 1 || i === files.length - 1 || name === 'en' || name === 'eng' || name === 'english'))
+            let name = this.addLanguage(file)
+
+            if (name !== null && this.main === null && (files.length === 1 || i === files.length - 1 || name === 'en' || name === 'eng' || name === 'english'))
                 this.main = name
         })
 
@@ -39,6 +40,12 @@ export default class MultiLang {
      */
     public addLanguage(file) : string {
         let filename = file.substring(file.lastIndexOf('/') + 1, file.lastIndexOf('.'))
+
+        if (Object.keys(this.languages).indexOf(filename) !== -1) {
+            console.warn(`[MultiLang] Can't add language with already added existing name '${filename}'.`)
+            return null
+        }
+
         this.languages[filename] = file
         return filename
     }
