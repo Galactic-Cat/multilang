@@ -58,13 +58,21 @@ export default class MultiLang {
      * @param parent Reload only decendents from this element. (Default to html element)
      */
     public retarget(parent?: Element) : void {
+        this.elements = []
+        
         if (parent === null || parent === undefined)
             parent = document.getElementsByTagName('html')[0]
+
+        let stack = [parent]
         
-        for (let i = 0; i < parent.children.length; i++) {
-            let child = parent.children[i]
-            if (child.hasAttribute('multilang'))
-                child.textContent = this.resolveTarget(child.getAttribute('multilang'))
+        while (stack.length > 0) {
+            let current = stack.pop()
+
+            if (current.getAttribute('multilang') !== null)
+                this.elements.push(current)
+
+            for (var i = 0; i < current.children.length; i++)
+                stack.push(current.children[i])
         }
     }
 
@@ -74,7 +82,7 @@ export default class MultiLang {
      * @param fromLanguage language to get target from (defaults to active)
      */
     private resolveTarget(target: string, fromLanguage?: string) : string {
-        let targetlist = target.split(/\.\//gi)
+        let targetlist = target.split(/[\.\/]/gi)
         let obj = this.languages[fromLanguage || this.active || this.main]
 
         while (targetlist.length > 0) {
@@ -102,7 +110,7 @@ export default class MultiLang {
      */
     public refresh() : void {
         this.elements.forEach((el) => {
-            el.textContent = this.resolveTarget(el.getAttribute('mutlilang'))
+            el.textContent = this.resolveTarget(el.getAttribute('multilang'))
         })
     }
 
@@ -136,7 +144,8 @@ export default class MultiLang {
             xmlhttp.overrideMimeType('application/json')
             xmlhttp.open('GET', this.files[target])
             xmlhttp.onreadystatechange = () => {
-                if (xmlhttp.status === 200) {
+                if (xmlhttp.readyState === 4) {
+                    this.languages[target] = JSON.parse(xmlhttp.responseText)
                     this.refresh()
                     if (callback !== null && callback !== undefined)
                         callback(true)

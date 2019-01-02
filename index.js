@@ -52,12 +52,16 @@ var MultiLang = /** @class */ (function () {
      * @param parent Reload only decendents from this element. (Default to html element)
      */
     MultiLang.prototype.retarget = function (parent) {
+        this.elements = [];
         if (parent === null || parent === undefined)
             parent = document.getElementsByTagName('html')[0];
-        for (var i = 0; i < parent.children.length; i++) {
-            var child = parent.children[i];
-            if (child.hasAttribute('multilang'))
-                child.textContent = this.resolveTarget(child.getAttribute('multilang'));
+        var stack = [parent];
+        while (stack.length > 0) {
+            var current = stack.pop();
+            if (current.getAttribute('multilang') !== null)
+                this.elements.push(current);
+            for (var i = 0; i < current.children.length; i++)
+                stack.push(current.children[i]);
         }
     };
     /**
@@ -66,7 +70,7 @@ var MultiLang = /** @class */ (function () {
      * @param fromLanguage language to get target from (defaults to active)
      */
     MultiLang.prototype.resolveTarget = function (target, fromLanguage) {
-        var targetlist = target.split(/\.\//gi);
+        var targetlist = target.split(/[\.\/]/gi);
         var obj = this.languages[fromLanguage || this.active || this.main];
         while (targetlist.length > 0) {
             var next = targetlist.shift();
@@ -93,7 +97,7 @@ var MultiLang = /** @class */ (function () {
     MultiLang.prototype.refresh = function () {
         var _this = this;
         this.elements.forEach(function (el) {
-            el.textContent = _this.resolveTarget(el.getAttribute('mutlilang'));
+            el.textContent = _this.resolveTarget(el.getAttribute('multilang'));
         });
     };
     /**
@@ -126,7 +130,8 @@ var MultiLang = /** @class */ (function () {
             xmlhttp_1.overrideMimeType('application/json');
             xmlhttp_1.open('GET', this.files[target]);
             xmlhttp_1.onreadystatechange = function () {
-                if (xmlhttp_1.status === 200) {
+                if (xmlhttp_1.readyState === 4) {
+                    _this.languages[target] = JSON.parse(xmlhttp_1.responseText);
                     _this.refresh();
                     if (callback !== null && callback !== undefined)
                         callback(true);
