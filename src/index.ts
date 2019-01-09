@@ -22,10 +22,14 @@ export default class MultiLang {
 
         // Find the file name
         files.forEach((file, i) => {
-            let name = file.substring(file.lastIndexOf('/') + 1, file.lastIndexOf('.'))
-            if (this.main === null && (files.length === 1 || i === files.length - 1 || name === 'en' || name === 'eng' || name === 'english'))
+            let name = this.addLanguage(file)
+
+            if (name !== null && this.main === null && (files.length === 1 || i === files.length - 1 || name === 'en' || name === 'eng' || name === 'english'))
                 this.main = name
         })
+
+        // Find the initial MultiLang targets
+        this.retarget()
 
         // Load the main language if provided
         if (this.main !== null)
@@ -39,7 +43,13 @@ export default class MultiLang {
      */
     public addLanguage(file) : string {
         let filename = file.substring(file.lastIndexOf('/') + 1, file.lastIndexOf('.'))
-        this.languages[filename] = file
+
+        if (Object.keys(this.files).indexOf(filename) !== -1) {
+            console.warn(`[MultiLang] Can't add language with already added existing name '${filename}'.`)
+            return null
+        }
+
+        this.files[filename] = file
         return filename
     }
 
@@ -48,13 +58,21 @@ export default class MultiLang {
      * @param parent Reload only decendents from this element. (Default to html element)
      */
     public retarget(parent?: Element) : void {
+        this.elements = []
+        
         if (parent === null || parent === undefined)
             parent = document.getElementsByTagName('html')[0]
+
+        let stack = [parent]
         
-        for (let i = 0; i < parent.children.length; i++) {
-            let child = parent.children[i]
-            if (child.hasAttribute('multilang'))
-                child.textContent = this.resolveTarget(child.getAttribute('multilang'))
+        while (stack.length > 0) {
+            let current = stack.pop()
+
+            if (current.getAttribute('multilang') !== null)
+                this.elements.push(current)
+
+            for (var i = 0; i < current.children.length; i++)
+                stack.push(current.children[i])
         }
     }
 
@@ -64,7 +82,7 @@ export default class MultiLang {
      * @param fromLanguage language to get target from (defaults to active)
      */
     private resolveTarget(target: string, fromLanguage?: string) : string {
-        let targetlist = target.split(/\.\//gi)
+        let targetlist = target.split(/[\.\/]/gi)
         let obj = this.languages[fromLanguage || this.active || this.main]
 
         while (targetlist.length > 0) {
@@ -92,7 +110,7 @@ export default class MultiLang {
      */
     public refresh() : void {
         this.elements.forEach((el) => {
-            el.textContent = this.resolveTarget(el.getAttribute('mutlilang'))
+            el.textContent = this.resolveTarget(el.getAttribute('multilang'))
         })
     }
 
@@ -126,7 +144,8 @@ export default class MultiLang {
             xmlhttp.overrideMimeType('application/json')
             xmlhttp.open('GET', this.files[target])
             xmlhttp.onreadystatechange = () => {
-                if (xmlhttp.status === 200) {
+                if (xmlhttp.readyState === 4) {
+                    this.languages[target] = JSON.parse(xmlhttp.responseText)
                     this.refresh()
                     if (callback !== null && callback !== undefined)
                         callback(true)
